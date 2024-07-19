@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/football_manager', {
@@ -45,32 +45,45 @@ app.use(express.json());
 const positions = ['TW', 'VT', 'MIT', 'ST'];
 const positionCounts = { 'TW': 2, 'VT': 6, 'MIT': 8, 'ST': 6 };
 
+const cities = [
+  'Berlin', 'Hamburg', 'Munich', 'Cologne', 'Frankfurt', 'Stuttgart', 'Dusseldorf', 'Dortmund', 'Essen', 'Leipzig',
+  'Bremen', 'Dresden', 'Hanover', 'Nuremberg', 'Duisburg', 'Bochum', 'Wuppertal', 'Bielefeld', 'Bonn', 'Mannheim',
+  'Karlsruhe', 'Augsburg', 'Wiesbaden', 'Gelsenkirchen', 'Mülheim', 'Halle', 'Magdeburg', 'Freiburg', 'Kiel', 'Oberhausen',
+  'Erfurt', 'Rostock', 'Oldenburg', 'Paderborn', 'Regensburg', 'Lübeck', 'Saarbrücken', 'Trier', 'Jena', 'Hagen',
+  'Kaiserslautern', 'Remscheid', 'Marl', 'Hamm', 'Cottbus', 'Solingen', 'Zwickau', 'Würzburg', 'Siegen', 'Kempten',
+  'Friedrichshafen', 'Heilbronn', 'Ravensburg', 'Görlitz', 'Ludwigsburg', 'Rosenheim', 'Aschaffenburg', 'Neuss', 'Krefeld',
+  'Minden', 'Pforzheim', 'Darmstadt', 'Bayreuth', 'Mönchengladbach', 'Landau', 'Celle', 'Lingen', 'Suhl', 'Jülich',
+  'Hagen', 'Herten', 'Bamberg', 'Dachau', 'Schweinfurt', 'Hof', 'Buxtehude', 'Limburg', 'Dülmen', 'Hünfeld'
+];
+
+const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
 const generatePlayer = (league) => {
-    const firstNames = [
-        'Max', 'Paul', 'Lukas', 'Finn', 'Jonas', 'Leon', 'Noah', 'Elias', 'Ben', 'Louis',
-        'Felix', 'Liam', 'Henry', 'Julian', 'Matteo', 'David', 'Mats', 'Anton', 'Emil', 'Oskar',
-        'Leo', 'Theo', 'Jakob', 'Moritz', 'Nico', 'Philipp', 'Erik', 'Samuel', 'Fabian', 'Simon',
-        'Rafael', 'Tom', 'Lenny', 'Alexander', 'Jonathan', 'Jan', 'Hannes', 'Jannik', 'Mika', 'Vincent',
-        'Niklas', 'Tobias', 'Carl', 'Sebastian', 'Levi', 'Lennart', 'Robin', 'Julius', 'Finnley', 'Gabriel',
-        'Adrian', 'Dominik', 'Marvin', 'Konstantin', 'Michael', 'Tim', 'Joshua', 'Benedikt', 'Frederik', 'Leonard',
-        'Aaron', 'Milan', 'Ruben', 'Daniel', 'Maximilian', 'Bastian', 'Andreas', 'Linus', 'Nils', 'Florian',
-        'Lars', 'Malte', 'Kilian', 'Jasper', 'Hugo', 'Ludwig', 'Christopher', 'Ferdinand', 'Marlon', 'Samuel',
-        'Oliver', 'Lio', 'Kian', 'Janis', 'Emilian', 'Valentin', 'Henryk', 'Fynn', 'Timo', 'Karl',
-        'Benno', 'Till', 'Albert', 'Clemens', 'Vinzenz', 'David', 'Jannis', 'Malik', 'Maurice', 'Emanuel'
-      ];
-      const lastNames = [
-        'Müller', 'Schmidt', 'Schneider', 'Fischer', 'Weber', 'Meyer', 'Wagner', 'Becker', 'Schulz', 'Hoffmann',
-        'Schäfer', 'Koch', 'Bauer', 'Richter', 'Klein', 'Wolf', 'Schröder', 'Neumann', 'Schwarz', 'Zimmermann',
-        'Braun', 'Krüger', 'Hofmann', 'Hartmann', 'Lange', 'Schmitt', 'Werner', 'Schmitz', 'Krause', 'Meier',
-        'Lehmann', 'Schmid', 'Schulze', 'Maier', 'Köhler', 'Herrmann', 'König', 'Walter', 'Mayer', 'Huber',
-        'Kaiser', 'Fuchs', 'Peters', 'Lang', 'Scholz', 'Möller', 'Weiß', 'Jung', 'Hahn', 'Schubert',
-        'Vogel', 'Friedrich', 'Keller', 'Günther', 'Frank', 'Berger', 'Winkler', 'Roth', 'Beck', 'Lorenz',
-        'Baumann', 'Franke', 'Albrecht', 'Schuster', 'Simon', 'Ludwig', 'Böhm', 'Winter', 'Kraus', 'Martin',
-        'Schumacher', 'Krämer', 'Vogt', 'Stein', 'Jäger', 'Otto', 'Groß', 'Sommer', 'Seidel', 'Heinrich',
-        'Brandt', 'Haas', 'Schreiber', 'Graf', 'Dietrich', 'Ziegler', 'Kuhn', 'Pohl', 'Engel', 'Horn',
-        'Busch', 'Bergmann', 'Thomas', 'Voigt', 'Sauer', 'Arnold', 'Wolff', 'Blum', 'Reuter', 'Wolff'
-      ];
-  const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const firstNames = [
+    'Max', 'Paul', 'Lukas', 'Finn', 'Jonas', 'Leon', 'Noah', 'Elias', 'Ben', 'Louis',
+    'Felix', 'Liam', 'Henry', 'Julian', 'Matteo', 'David', 'Mats', 'Anton', 'Emil', 'Oskar',
+    'Leo', 'Theo', 'Jakob', 'Moritz', 'Nico', 'Philipp', 'Erik', 'Samuel', 'Fabian', 'Simon',
+    'Rafael', 'Tom', 'Lenny', 'Alexander', 'Jonathan', 'Jan', 'Hannes', 'Jannik', 'Mika', 'Vincent',
+    'Niklas', 'Tobias', 'Carl', 'Sebastian', 'Levi', 'Lennart', 'Robin', 'Julius', 'Finnley', 'Gabriel',
+    'Adrian', 'Dominik', 'Marvin', 'Konstantin', 'Michael', 'Tim', 'Joshua', 'Benedikt', 'Frederik', 'Leonard',
+    'Aaron', 'Milan', 'Ruben', 'Daniel', 'Maximilian', 'Bastian', 'Andreas', 'Linus', 'Nils', 'Florian',
+    'Lars', 'Malte', 'Kilian', 'Jasper', 'Hugo', 'Ludwig', 'Christopher', 'Ferdinand', 'Marlon', 'Samuel',
+    'Oliver', 'Lio', 'Kian', 'Janis', 'Emilian', 'Valentin', 'Henryk', 'Fynn', 'Timo', 'Karl',
+    'Benno', 'Till', 'Albert', 'Clemens', 'Vinzenz', 'David', 'Jannis', 'Malik', 'Maurice', 'Emanuel'
+  ];
+  const lastNames = [
+    'Müller', 'Schmidt', 'Schneider', 'Fischer', 'Weber', 'Meyer', 'Wagner', 'Becker', 'Schulz', 'Hoffmann',
+    'Schäfer', 'Koch', 'Bauer', 'Richter', 'Klein', 'Wolf', 'Schröder', 'Neumann', 'Schwarz', 'Zimmermann',
+    'Braun', 'Krüger', 'Hofmann', 'Hartmann', 'Lange', 'Schmitt', 'Werner', 'Schmitz', 'Krause', 'Meier',
+    'Lehmann', 'Schmid', 'Schulze', 'Maier', 'Köhler', 'Herrmann', 'König', 'Walter', 'Mayer', 'Huber',
+    'Kaiser', 'Fuchs', 'Peters', 'Lang', 'Scholz', 'Möller', 'Weiß', 'Jung', 'Hahn', 'Schubert',
+    'Vogel', 'Friedrich', 'Keller', 'Günther', 'Frank', 'Berger', 'Winkler', 'Roth', 'Beck', 'Lorenz',
+    'Baumann', 'Franke', 'Albrecht', 'Schuster', 'Simon', 'Ludwig', 'Böhm', 'Winter', 'Kraus', 'Martin',
+    'Schumacher', 'Krämer', 'Vogt', 'Stein', 'Jäger', 'Otto', 'Groß', 'Sommer', 'Seidel', 'Heinrich',
+    'Brandt', 'Haas', 'Schreiber', 'Graf', 'Dietrich', 'Ziegler', 'Kuhn', 'Pohl', 'Engel', 'Horn',
+    'Busch', 'Bergmann', 'Thomas', 'Voigt', 'Sauer', 'Arnold', 'Wolff', 'Blum', 'Reuter', 'Wolff'
+  ];
+
   const strength = Math.floor(Math.random() * 5) + (league === 1 ? 8 : league === 2 ? 6 : 4);
   const age = Math.floor(Math.random() * 30) + 16;
   const contractLength = Math.floor(Math.random() * 5) + 1;
@@ -103,12 +116,21 @@ const createInitialTeams = async () => {
   const teamsPerLeague = 18;
 
   for (let league = 1; league <= 3; league++) {
+    const leagueName = leagues[league - 1];
+    const availableCities = [...cities];
     const teams = [];
+
     for (let i = 0; i < teamsPerLeague; i++) {
-      const teamName = `Team ${league}-${i + 1}`;
+      if (availableCities.length === 0) {
+        throw new Error('Not enough unique cities for teams');
+      }
+      const cityName = getRandom(availableCities);
+      const teamName = `${cityName} ${league}`;
+      availableCities.splice(availableCities.indexOf(cityName), 1);
       teams.push(generateTeam(teamName, league));
     }
-    const newLeague = new League({ name: leagues[league - 1], teams });
+
+    const newLeague = new League({ name: leagueName, teams });
     await newLeague.save();
   }
 };
@@ -122,7 +144,7 @@ app.post('/createTeam', async (req, res) => {
   }
 
   const newTeam = generateTeam(name, league);
-  leagueData.teams[Math.floor(Math.random() * leagueData.teams.length)] = newTeam;
+  leagueData.teams.push(newTeam);  // Add the new team to the league
   await leagueData.save();
 
   res.send('Team created and added to league');

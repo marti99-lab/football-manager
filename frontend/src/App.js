@@ -9,10 +9,13 @@ const App = () => {
   const [selectedLeagueForTeam, setSelectedLeagueForTeam] = useState(1);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/leagues')
+    axios.get('http://localhost:3001/leagues')  // Ensure this matches the server port
       .then(response => {
         setLeagues(response.data);
         setSelectedLeague(response.data[0]);
+      })
+      .catch(error => {
+        console.error('Error fetching leagues:', error);
       });
   }, []);
 
@@ -22,18 +25,29 @@ const App = () => {
   };
 
   const handleCreateTeam = () => {
-    axios.post('http://localhost:3000/createTeam', {
+    axios.post('http://localhost:3001/createTeam', {  // Ensure this matches the server port
       name: teamName,
       league: selectedLeagueForTeam,
-    }).then(() => {
+    })
+    .then(() => {
       // Refresh leagues after adding the new team
-      axios.get('http://localhost:3000/leagues')
+      axios.get('http://localhost:3001/leagues')  // Ensure this matches the server port
         .then(response => {
           setLeagues(response.data);
           setSelectedLeague(response.data.find(l => l.name === `Liga ${selectedLeagueForTeam}`));
+        })
+        .catch(error => {
+          console.error('Error fetching leagues after team creation:', error);
         });
+    })
+    .catch(error => {
+      console.error('Error creating team:', error);
     });
   };
+
+  // Remove duplicate league names
+  const uniqueLeagues = Array.from(new Set(leagues.map(l => l.name)))
+    .map(name => leagues.find(l => l.name === name));
 
   return (
     <div className="App">
@@ -41,7 +55,7 @@ const App = () => {
       <div>
         <label htmlFor="league-select">Liga auswählen: </label>
         <select id="league-select" onChange={handleLeagueChange}>
-          {leagues.map(league => (
+          {uniqueLeagues.map(league => (
             <option key={league.name} value={league.name}>{league.name}</option>
           ))}
         </select>
@@ -73,7 +87,7 @@ const App = () => {
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
         />
-        <select onChange={(e) => setSelectedLeagueForTeam(e.target.value)}>
+        <select onChange={(e) => setSelectedLeagueForTeam(parseInt(e.target.value, 10))}>
           <option value={1}>1. Liga</option>
           <option value={2}>2. Liga</option>
           <option value={3}>3. Liga</option>
@@ -85,3 +99,4 @@ const App = () => {
 }
 
 export default App;
+
