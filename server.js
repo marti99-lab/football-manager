@@ -5,7 +5,15 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-mongoose.connect('mongodb://localhost/football_manager', { useNewUrlParser: true, useUnifiedTopology: true });
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/football_manager', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log('MongoDB connected successfully'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 const playerSchema = new mongoose.Schema({
   firstName: String,
